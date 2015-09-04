@@ -3,8 +3,12 @@
   "description": "A hubot script that interact with luigi scheduler",
   "version": "1.0.0",
   "author": "Kyle Sun <kyle@houzz.com>",
-  "license": "MIT",
-  "keywords": "hubot, hubot-scripts, luigi",
+  "license": "APACHE 2.0",
+  "keywords": [
+    "hubot",
+    "hubot-scripts",
+    "luigi"
+  ],
   "repository": {
     "type": "git",
     "url": "git://github.com/Houzz/hubot-luigi.git"
@@ -13,13 +17,11 @@
     "url": "https://github.com/Houzz/hubot-luigi/issues"
   },
   "dependencies": {},
-  "peerDependencies": {
-  },
-  "devDependencies": {
-  },
+  "peerDependencies": {},
+  "devDependencies": {},
   "main": "index.coffee",
   "scripts": {
     "test": "grunt test"
-  }
+  },
+  "homepage": "https://github.com/Houzz/hubot-luigi"
 }
-
