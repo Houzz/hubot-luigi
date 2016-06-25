@@ -10,6 +10,7 @@
 #   hubot luigi refresh resources - Luigi refresh resources from disk
 #   hubot luigi workers - Luigi worker summary
 #   hubot luigi worker <salt> - Show worker details
+#   hubot luigi blockers - Show worker details
 #   
 # Configuration:
 #   HUBOT_LUIGI_ENDPOINT - luigi scheduler api endpoint, like 'http://localhost:8082/api/'
@@ -96,6 +97,13 @@ module.exports = (robot) ->
           results.push(resource + " : " + d.used + "/" + d.total)
         msg.send results.join("\n")
 
+  robot.respond /luigi blockers(\s*)/i, (msg) ->
+    callLuigiBlockers msg, (res) ->
+      results = []
+      for w in res
+        results.push(w.blocked + " " + w.display_name)
+      msg.send results.join("\n")
+
 sendLimitedResult = (msg, results, n=0) ->
   if results.length > 0
     if n > 0
@@ -160,6 +168,18 @@ callLuigiUpdateResources= (msg, cb) ->
 
 callLuigiWorkers= (msg, cb) ->
   msg.http(luigiApiEndpoint + "worker_list")
+    .get() (err, res, body) ->
+      try
+        ret = JSON.parse body
+        cb ret.response
+      catch error
+        console.log body
+        console.log error
+        cb {}
+
+callLuigiBlockers = (msg, cb) ->
+  msg.http(luigiApiEndpoint + "blockers")
+    .query(data: JSON.stringify({priority_sum: true, min_blocked: 101, limit: 10}))
     .get() (err, res, body) ->
       try
         ret = JSON.parse body
