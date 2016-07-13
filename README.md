@@ -5,7 +5,7 @@ Interact with luigi central scheduler, to get job status, worker status, etc.
 
 ## Installation
 
-Add the package `hubot-luigi` entry to the `external-scripts.json` file
+Add the package `hubot-luigi` entry to the `packages.json` file
 (you may need to create this file).
 
     "dependencies": {
@@ -16,7 +16,7 @@ Run the following command to make sure the module is installed.
 
     #npm install hubot-luigi
 
-To enable the script, add the `hubot-luigi` entry to the `packages.json`
+To enable the script, add the `hubot-luigi` entry to the `external-scripts.json`
 file (you may need to create this file).
 
     ["hubots-luigi"]
