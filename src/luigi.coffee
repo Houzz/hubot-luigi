@@ -14,6 +14,9 @@
 #   
 # Configuration:
 #   HUBOT_LUIGI_ENDPOINT - luigi scheduler api endpoint, like 'http://localhost:8082/api/'
+#   HUBOT_LUIGI_BLOCKERS_CRONTAB - crontab to run blocker alerts
+#   HUBOT_LUIGI_BLOCKERS_THRESHOLD - alert threshold
+#   HUBOT_LUIGI_BLOCKERS_ROOM - the room to post to for blocker alert
 #
 # URLS:
 #   https://github.com/spotify/luigi/
@@ -24,7 +27,38 @@
 
 luigiApiEndpoint = process.env.HUBOT_LUIGI_ENDPOINT
 
+luigiBlockersCrontab = process.env.HUBOT_LUIGI_BLOCKERS_CRONTAB
+luigiBlockersThreshold = process.env.HUBOT_LUIGI_BLOCKERS_THRESHOLD
+luigiBlockersAlertRoom = process.env.HUBOT_LUIGI_BLOCKERS_ROOM
+
 module.exports = (robot) ->
+
+  blockersAlert = ->
+    console.log "running cronjob - getting luigi blockers stats"
+    robot.http(luigiApiEndpoint + "blockers")
+      .query(data: JSON.stringify({priority_sum: true, min_blocked: parseInt(luigiBlockersThreshold, 10), limit: 10}))
+      .get() (err, res, body) ->
+        try
+          ret = JSON.parse body
+          if ret.response.length > 0
+            results = []
+            for w in ret.response
+              results.push(w.blocked + " " + w.display_name)
+            console.log "luigi blockers \n" + results.join("\n")
+            robot.messageRoom luigiBlockersAlertRoom, "hi team, there seems to be some slackers in the pipeline: \n" + results.join("\n")
+        catch error
+          console.log body
+          console.log error
+
+  if luigiBlockersCrontab
+    console.log("enabling luigi blockers")
+    cronJob = require('cron').CronJob
+    tz = 'America/Los_Angeles'
+    try
+      new cronJob(luigiBlockersCrontab, blockersAlert, null, true, tz)
+    catch error
+      console.log error
+
   robot.respond /luigi statu?s(\s*)$/i, (msg) ->
     callLuigiTaskList msg, "RUNNING", (res) ->
       running = numberOfTask(res)
