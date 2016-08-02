@@ -1,7 +1,7 @@
 {
   "name": "hubot-luigi",
   "description": "A hubot script that interact with luigi scheduler",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "author": "Kyle Sun <kyle@houzz.com>",
   "license": "APACHE 2.0",
   "keywords": [
